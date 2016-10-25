@@ -16,7 +16,10 @@ def simpleParse(source, dest):
 		for line in fSource:
 			commentObj = json.loads(line)
 			comment = commentObj[u'body']
-			comment = str(comment)
+			try:
+				comment = str(comment)
+			except UnicodeEncodeError:
+				continue
 			comment = comment.split()
 			words = [0]*10000
 			for word in comment:
