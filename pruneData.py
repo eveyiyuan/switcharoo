@@ -6,7 +6,7 @@ import re
 
 def processData(source, dest):
 	fDest = open(dest+".json", 'a')
-	fPID = open(dest+"_pid.json", 'a')
+	fPID = open(dest+"_pid.txt", 'a')
 	with open(source, 'r') as f:
 		for line in f:
 			commentObj = json.loads(line)
@@ -35,20 +35,25 @@ def processData(source, dest):
 	# 	queryIDs.to_csv(d2, header=False, index=False)
 
 def processDataFromChild(idsPath, source, dest):
-	print idsPath
+	fDest = open(dest+".json", 'a')
 	with open(idsPath, 'r') as f:
 		ids = [l.rstrip() for l in f]
 
 	with open(source, 'r') as f2:
-		data = f2.readlines()
-	data = map(lambda x: x.rstrip(), data)
-	data_json_str = "[" + ','.join(data) + "]"
-	data_df = pd.read_json(data_json_str)
-	query = data_df[data_df.name.isin(ids)]
-	queryD = query.to_dict('records')
-	queryD = [json.dumps(record)+"\n" for record in queryD]
-	with open(dest+".json", 'a') as d:
-		d.writelines(queryD)
+		for line in f2:
+			commentObj = json.loads(line)
+			name = commentObj[u'name']
+			if name in ids:
+				fDest.write(line)
+		# 	data = f2.readlines()
+	# data = map(lambda x: x.rstrip(), data)
+	# data_json_str = "[" + ','.join(data) + "]"
+	# data_df = pd.read_json(data_json_str)
+	# query = data_df[data_df.name.isin(ids)]
+	# queryD = query.to_dict('records')
+	# queryD = [json.dumps(record)+"\n" for record in queryD]
+	# with open(dest+".json", 'a') as d:
+	# 	d.writelines(queryD)
 
 def main(argv):
 	source = ''
