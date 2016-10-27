@@ -2,21 +2,37 @@ import pandas as pd
 import sys, getopt
 import numpy as np
 import json
+import re
 
 def processData(source, dest):
+	fDest = open(dest+".json", 'a')
+	fPID = open(dest+"_pid.json", 'a')
 	with open(source, 'r') as f:
-		data = f.readlines()
-	data = map(lambda x: x.rstrip(), data)
-	data_json_str = "[" + ','.join(data) + "]"
-	data_df = pd.read_json(data_json_str)
-	query = data_df[data_df.body.str.contains("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")]
-	queryD = query.to_dict('records')
-	queryD = [json.dumps(record)+"\n" for record in queryD]
-	with open(dest+".json", 'a') as d:
-		d.writelines(queryD)
-	queryIDs = query["parent_id"]
-	with open(dest+"_parentIDs.csv", 'a') as d2:
-		queryIDs.to_csv(d2, header=False, index=False)
+		for line in f:
+			commentObj = json.loads(line)
+			comment = commentObj[u'body']
+			try:
+				comment = str(comment)
+			except UnicodeEncodeError:
+				continue
+			p = re.compile("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")
+			if len(p.findall(comment)) != 0:
+				fDest.write(line)
+				fPID.write(commentObj[u'parent_id']+"\n")
+	fDest.close()
+
+	# 	data = f.readlines()
+	# data = map(lambda x: x.rstrip(), data)
+	# data_json_str = "[" + ','.join(data) + "]"
+	# data_df = pd.read_json(data_json_str)
+	# query = data_df[data_df.body.str.contains("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")]
+	# queryD = query.to_dict('records')
+	# queryD = [json.dumps(record)+"\n" for record in queryD]
+	# with open(dest+".json", 'a') as d:
+	# 	d.writelines(queryD)
+	# queryIDs = query["parent_id"]
+	# with open(dest+"_parentIDs.csv", 'a') as d2:
+	# 	queryIDs.to_csv(d2, header=False, index=False)
 
 def processDataFromChild(idsPath, source, dest):
 	print idsPath
@@ -33,7 +49,7 @@ def processDataFromChild(idsPath, source, dest):
 	queryD = [json.dumps(record)+"\n" for record in queryD]
 	with open(dest+".json", 'a') as d:
 		d.writelines(queryD)
-		
+
 def main(argv):
 	source = ''
 	dest = ''
