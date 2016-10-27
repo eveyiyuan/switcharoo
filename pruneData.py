@@ -1,0 +1,32 @@
+import pandas as pd
+import sys, getopt
+import numpy as np
+
+def processData(source, dest):
+	with open(source, 'rb') as f:
+		data = f.readlines()
+	data = map(lambda x: x.rstrip(), data)
+	data_json_str = "[" + ','.join(data) + "]"
+	data_df = pd.read_json(data_json_str)
+	query = data_df[data_df.body.str.contains("[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-A ]+-?[ae]-?roo+")]
+	with open(dest, 'a') as d:
+		query.to_json(d, orient='records')
+
+def main(argv):
+	source = ''
+	dest = ''
+	try:
+		opts, args = getopt.getopt(argv,"i:o:")
+	except getopt.GetoptError:
+		print 'Usage: pruneData.py -i <input file> -o <output file>'
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == "-i":
+			source = arg
+		elif opt == "-o":
+			dest = arg
+	processData(source, dest)
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
+
