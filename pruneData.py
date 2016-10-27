@@ -1,6 +1,7 @@
 import pandas as pd
 import sys, getopt
 import numpy as np
+import json
 
 def processData(source, dest):
 	with open(source, 'rb') as f:
@@ -9,8 +10,10 @@ def processData(source, dest):
 	data_json_str = "[" + ','.join(data) + "]"
 	data_df = pd.read_json(data_json_str)
 	query = data_df[data_df.body.str.contains("[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-A ]+-?[AEae]-?roo+")]
+	queryD = query.to_dict('records')
+	queryD = [json.dumps(record)+"\n" for record in queryD]
 	with open(dest, 'a') as d:
-		query.to_json(d, orient='records')
+		d.writelines(queryD)
 
 def main(argv):
 	source = ''
