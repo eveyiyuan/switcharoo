@@ -4,12 +4,12 @@ import numpy as np
 import json
 
 def processData(source, dest):
-	with open(source, 'rb') as f:
+	with open(source, 'r') as f:
 		data = f.readlines()
 	data = map(lambda x: x.rstrip(), data)
 	data_json_str = "[" + ','.join(data) + "]"
 	data_df = pd.read_json(data_json_str)
-	query = data_df[data_df.body.str.contains("[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-A ]+-?[AEae]-?roo+")]
+	query = data_df[data_df.body.str.contains("[\[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")]
 	queryD = query.to_dict('records')
 	queryD = [json.dumps(record)+"\n" for record in queryD]
 	with open(dest, 'a') as d:
