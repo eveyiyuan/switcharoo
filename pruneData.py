@@ -9,7 +9,7 @@ def processData(source, dest):
 	data = map(lambda x: x.rstrip(), data)
 	data_json_str = "[" + ','.join(data) + "]"
 	data_df = pd.read_json(data_json_str)
-	query = data_df[data_df.body.str.contains("[\[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")]
+	query = data_df[data_df.body.str.contains("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")]
 	queryD = query.to_dict('records')
 	queryD = [json.dumps(record)+"\n" for record in queryD]
 	with open(dest, 'a') as d:
