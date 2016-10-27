@@ -8,7 +8,7 @@ def processData(source, dest):
 	data = map(lambda x: x.rstrip(), data)
 	data_json_str = "[" + ','.join(data) + "]"
 	data_df = pd.read_json(data_json_str)
-	query = data_df[data_df.body.str.contains("[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-A ]+-?[ae]-?roo+")]
+	query = data_df[data_df.body.str.contains("[Aa]+h+,? the ol['ed] [Rr]eddit [a-zA-A ]+-?[AEae]-?roo+")]
 	with open(dest, 'a') as d:
 		query.to_json(d, orient='records')
 
