@@ -15,13 +15,32 @@ comments, and the other filled with tf-idf representations of switcharoos.
 Trains a basic logistic regression model on this information, and scores it.
 """
 
-with open("positive_examples.csv", 'r') as pos,\
-    open("negative_examples.csv", 'r') as neg:
-        pos_raw = np.recfromcsv(pos)
-        neg_raw = np.recfromcsv(neg)
-        pos_labeled = np.append(pos_raw, np.ones([len(pos_raw),1]),1)
-        neg_labeled = np.append(neg_raw, np.zeros([len(neg_raw),1]),1)
-        data = np.vstack(pos_labeled, neg_labeled)
+def parseCsv(filename):
+	f = open(filename, 'r')
+	data_matrix = []
+	for line in f:
+		entries = line.strip().split(',')
+		data = [int(i) for i in entries]
+		data_matrix.append(data)
+	f.close()
+	return np.array(data_matrix)
+
+# with open("positive_examples.csv", 'r') as pos,\
+#     open("negative_examples.csv", 'r') as neg:
+#         pos_raw = np.recfromcsv(pos)
+#         neg_raw = np.recfromcsv(neg)
+#         pos_raw = parseCsv("positive_examples.csv")
+#         neg_raw = parseCsv("negative_examples.csv")
+#         pos_labeled = np.append(pos_raw, np.ones([len(pos_raw),1]),1)
+#         neg_labeled = np.append(neg_raw, np.zeros([len(neg_raw),1]),1)
+#         data = np.vstack(pos_labeled, neg_labeled)
+
+pos_raw = parseCsv("positive_examples.csv")
+neg_raw = parseCsv("negative_examples.csv")
+pos_labeled = np.append(pos_raw, np.ones([len(pos_raw),1]),1)
+neg_labeled = np.append(neg_raw, np.zeros([len(neg_raw),1]),1)
+data = np.vstack([pos_labeled, neg_labeled])
+
 
 np.random.seed(2016)
 np.random.shuffle(data)
