@@ -5,7 +5,7 @@ Created on Tue Oct 25 14:35:04 2016
 @author: giraffe
 """
 
-import sklearn
+from sklearn import linear_model, metrics
 import numpy as np
 
 
@@ -46,7 +46,7 @@ np.random.seed(2016)
 np.random.shuffle(data)
 # Split into 90% training and 10% testing data.
 test = data[:int(.1*data.shape[0]),:]
-train = data[int(.1*data.shape[0]),:]
+train = data[:int(.1*data.shape[0]),:]
 
 # Split into X's and Y's.
 testX = test[:,:-1]
@@ -55,7 +55,12 @@ trainX = train[:,:-1]
 trainY = train[:,-1]
 
 # Train basic logit model.
-basic_model = sklearn.linear_model.LogisticRegressionCV()
+basic_model = linear_model.LogisticRegression()
 basic_model.fit(trainX, trainY)
-basic_model.score(testX, testY)
+score = basic_model.score(testX, testY)
+pred = basic_model.predict(testX)
+print "The score is", score
+print metrics.confusion_matrix(testY, pred)
+print metrics.classification_report(testY, pred)
+
 
