@@ -46,7 +46,7 @@ np.random.seed(2016)
 np.random.shuffle(data)
 # Split into 90% training and 10% testing data.
 test = data[:int(.1*data.shape[0]),:]
-train = data[:int(.1*data.shape[0]),:]
+train = data[int(.1*data.shape[0]):,:]
 
 # Split into X's and Y's.
 testX = test[:,:-1]
