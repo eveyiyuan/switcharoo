@@ -1,14 +1,19 @@
 import sys, getopt
 import json
 import string
+import * from variables.py
 
 topWords = []
 topWordsFile = "google-10000-english.txt"
 def buildTop():
+	numWords = 1
 	with open(topWordsFile, 'r') as f:
 		for line in f:
+			if numWords > NUM_FREQ_WORDS:
+				break
 			line = line.strip()
 			topWords.append(line)
+			numWords += 1
 
 def simpleParse(source, dest):
 	fDest = open(dest, 'a')
@@ -21,7 +26,7 @@ def simpleParse(source, dest):
 			except UnicodeEncodeError:
 				continue
 			comment = comment.split()
-			words = [0]*10000
+			words = [0]*NUM_FREQ_WORDS
 			for word in comment:
 				wordNoPunct = word.translate(string.maketrans("",""), string.punctuation)
 				if wordNoPunct.lower() in topWords:
