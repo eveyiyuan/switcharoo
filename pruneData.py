@@ -15,11 +15,12 @@ def processData(source, dest):
 				comment = str(comment)
 			except UnicodeEncodeError:
 				continue
-			p = re.compile("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")
+			p = re.compile("[Aa]+[hH]+,? [Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")
 			if len(p.findall(comment)) != 0:
 				fDest.write(line)
 				fPID.write(commentObj[u'parent_id']+"\n")
 	fDest.close()
+	fPID.close()
 
 	# 	data = f.readlines()
 	# data = map(lambda x: x.rstrip(), data)
@@ -36,6 +37,7 @@ def processData(source, dest):
 
 def processDataFromChild(idsPath, source, dest):
 	fDest = open(dest+".json", 'a')
+	fPID = open(dest+"_pid.txt", 'a')
 	with open(idsPath, 'r') as f:
 		ids = [l.rstrip() for l in f]
 
@@ -45,7 +47,12 @@ def processDataFromChild(idsPath, source, dest):
 			name = commentObj[u'name']
 			if name in ids:
 				fDest.write(line)
-		# 	data = f2.readlines()
+				fPID.write(commentObj[u'parent_id']+"\n")
+
+
+	fPID.close()
+	fDest.close()
+			# 	data = f2.readlines()
 	# data = map(lambda x: x.rstrip(), data)
 	# data_json_str = "[" + ','.join(data) + "]"
 	# data_df = pd.read_json(data_json_str)
