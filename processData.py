@@ -1,7 +1,6 @@
 import sys, getopt
 import json
 import string
-import gensim
 import * from variables.py
 
 topWords = []
@@ -37,27 +36,6 @@ def simpleParse(source, dest):
 			fDest.write(wordsStr)
 			fDest.write('\n')
 	fDest.close()
-
-def word2vecParse(source, dest):
-	fDest = open(dest, 'a')
-	with open(source, 'r') as fSource:
-		for line in fSource:
-			commentObj = json.loads(line)
-			comment = commentObj[u'body']
-			try:
-				comment = str(comment)
-			except UnicodeEncodeError:
-				continue
-			comment = comment.split()
-			words = [0]*10000
-			for word in comment:
-				wordNoPunct = word.translate(string.maketrans("",""), string.punctuation)
-				if wordNoPunct.lower() in topWords:
-					words[topWords.index(wordNoPunct.lower())] += 1
-			wordsStr = ','.join(str(x) for x in words)
-			fDest.write(wordsStr)
-			fDest.write('\n')
-	fDest.close()	
 
 def main(argv):
 	buildTop()
