@@ -3,7 +3,7 @@ import os
 import json
 import sys, getopt
 import string
-from variables.py import *
+from variables import *
 
 
 class MySentences(object):
@@ -11,17 +11,17 @@ class MySentences(object):
 		self.dirname = dirname
 
 	def __iter__(self):
-	for fname in os.listdir(self.dirname):
-		for line in open(os.path.join(self.dirname, fname)):
-			commentObj = json.loads(line)
-			comment = commentObj[u'body']
-			try:
-				comment = str(comment)
-			except UnicodeEncodeError:
-				continue
-			yield comment.split()
+		for fname in os.listdir(self.dirname):
+			for line in open(os.path.join(self.dirname, fname)):
+				commentObj = json.loads(line)
+				comment = commentObj[u'body']
+				try:
+					comment = str(comment)
+				except UnicodeEncodeError:
+					continue
+				yield comment.split()
 
-def main():
+def main(argv):
 	source = ''
 	dest = ''
 	try:
@@ -37,3 +37,6 @@ def main():
 	sentences = MySentences(source)
 	model = gensim.models.Word2Vec(sentences, min_count=MIN_COUNT, size=NN_LAYER_SIZE)
 	model.save(dest)
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
