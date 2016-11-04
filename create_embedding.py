@@ -3,7 +3,7 @@ import os
 import json
 import sys, getopt
 import string
-import * from variables.py
+from variables.py import *
 
 
 class MySentences(object):
