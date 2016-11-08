@@ -16,11 +16,14 @@ comments, and the other filled with tf-idf representations of switcharoos.
 Trains a basic logistic regression model on this information, and scores it.
 """
 
-def parseCsv(filename):
+def parseCsv(filename, limit = 1000):
 	f = open(filename, 'r')
 	data_matrix = []
+	count = 0
 	#lengths = dict()
 	for line in f:
+		if count > limit:
+			break
 		entries = line.strip().split(',')
 		try:
 			data = [int(i) for i in entries]
@@ -31,6 +34,7 @@ def parseCsv(filename):
 			# data_matrix.append(data)
 			if len(data) == 30000:
 				data_matrix.append(data)
+				count += 1
 		except ValueError:
 			continue
 	# for key in lengths:
@@ -38,17 +42,21 @@ def parseCsv(filename):
 	f.close()
 	return np.array(data_matrix)
 
-def parseCsv2(filename):
+def parseCsv2(filename, limit = 1000):
 	'''
 	No NumPy array conversion.
 	'''
 	f = open(filename, 'r')
 	data_matrix = []
+	count = 0
 	for line in f:
+		if count > limit:
+			break
 		entries = line.strip().split(',')
 		try:
 			data = [int(i) for i in entries]
 			data_matrix.append(data)
+			count += 1
 		except ValueError:
 			continue
 	f.close()
@@ -112,8 +120,9 @@ log_probs = basic_model.predict_log_proba(testX)
 indices = np.argpartition(log_probs[:, 1], -10)[-10:]
 # Invert the shuffle.
 np.random.seed(2016)
-inverse = np.random.shuffle(range(len(data)))
-unshuffled_indices = inverse[indices]
+inverse = range(len(data))
+np.random.shuffle(inverse)
+unshuffled_indices = [inverse[i] for i in indices]
 # Get the original lines.
 for index in unshuffled_indices:
 	if data[index][-1] == 0:
@@ -126,9 +135,10 @@ for index in unshuffled_indices:
 		# Look up the random choices we made.
 		rand_choices = choices[index]
 		for choice in rand_choices:
-			line = linecache.getline('negative_examples.json')
+			line = linecache.getline('negative_examples.json', choice)
 			obj = json.loads(line)
 			print obj[u'body']
+		print 'END OF COMMENT - NEG'
 	else:
 		# Get the blast from the positive json file.
 		line = linecache.getline('all3positive.json', index)
@@ -136,4 +146,5 @@ for index in unshuffled_indices:
 		print obj[u'grandparent'][u'body']
 		print obj[u'parent'][u'body']
 		print obj[u'child'][u'body']
+		print 'END OF COMMENT - POS'
 
