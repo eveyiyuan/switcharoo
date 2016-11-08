@@ -15,7 +15,7 @@ def processData(source, dest):
 				comment = str(comment)
 			except UnicodeEncodeError:
 				continue
-			p = re.compile("[Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")
+			p = re.compile("[Aa]+[hH]?,? [Tt]he ol['ed] [Rr]eddit [a-zA-Z ]+-?[AEae]-?roo+")
 			if len(p.findall(comment)) != 0:
 				fDest.write(line)
 				fPID.write(commentObj[u'parent_id']+"\n")
