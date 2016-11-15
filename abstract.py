@@ -55,24 +55,34 @@ class CommentEmbedder:
 
 class AvgCommentEmbedder(CommentEmbedder):
     """
-    Given a word embedding, implements the comment embedding by averaging the
+    Given a word embedding, implements the comment embedding by averaging
+    the embeddings of each word in a word embedding. We're using the word2vec
+    embedding trained on the GoogleNews corpus.
     """
+    def __init__(self,  filename = 'GoogleNews-vectors-negative300.bin', binary = True):
+        self.loadEmbedding(filename = filename, binary = binary)
 
-    def embedComment(self, text, filename = 'GoogleNews-vectors-negative300.bin'):
+    def loadEmbedding(self, filename = 'GoogleNews-vectors-negative300.bin', binary = True):
+        self.model = gensim.models.Word2Vec.load_word2vec_format(filename, binary = binary)
+
+    def embedComment(self, text):
         """
         Embeds the comment by averaging the word embedding for each word in
         the embedding.
         """
-        # Load in the pretrained model.
-        model = gensim.models.Word2Vec.load_word2vec_format(filename, binary = True)
         comment = self.tokenize(text)
-        embedding = model[comment[0]]
+        embedding = self.model[comment[0]]
+        deleted = 0
         for i in range(1, len(comment)):
             try:
-                embedding += model[comment[i]]
+                embedding += self.model[comment[i]]
             except KeyError:
+                deleted += 1
                 continue
-        embedding = embedding / len(comment)
+        try:
+            embedding = embedding / (len(comment) - deleted)
+        except ValueError:
+            print "Cannot embed this vector rip"
         return embedding
 
 
@@ -86,7 +96,7 @@ class BoWCommentEmbedder(CommentEmbedder):
     @staticmethod
     def buildTopWords(filename = "google-10000-english.txt", num_freq_words = 10000):
         """
-        Builds a list ot the top X English words.
+        Builds a list of the top X English words.
         """
         numWords = 1
         topWords = []
@@ -117,9 +127,12 @@ def test():
     """
     # Make a new AvgCommentEmbedder.
     averager = AvgCommentEmbedder()
-    averager.embedComment("the dog went to the park")
+    #averager.loadEmbedding()
+    vec1 = averager.embedComment("cat dog")
+    vec2 = averager.embedComment("pizza burger")
+    vec3 = averager.embedComment("cat")
+    assert((np.linalg.norm(vec1 - vec3)) < (np.linalg.norm(vec2 - vec3)))
     bow = BoWCommentEmbedder()
-    assert()
     test_bow = np.zeros(10000)
     test_bow[0] = 1
     assert(np.all(np.equal(bow.embedComment("the"), test_bow)))
