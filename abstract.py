@@ -5,9 +5,7 @@ Created on Mon Nov 12 09:05:33 2016
 @author: giraffe
 """
 
-import numpy as np
 import string
-import gensim
 
 # Abstract class for comment embedding.
 
@@ -51,91 +49,3 @@ class CommentEmbedder:
         might as well just construct a big ol' object in memory for it instead.
         """
         pass
-
-
-class AvgCommentEmbedder(CommentEmbedder):
-    """
-    Given a word embedding, implements the comment embedding by averaging
-    the embeddings of each word in a word embedding. We're using the word2vec
-    embedding trained on the GoogleNews corpus.
-    """
-    def __init__(self,  filename = 'GoogleNews-vectors-negative300.bin', binary = True):
-        self.loadEmbedding(filename = filename, binary = binary)
-
-    def loadEmbedding(self, filename = 'GoogleNews-vectors-negative300.bin', binary = True):
-        self.model = gensim.models.Word2Vec.load_word2vec_format(filename, binary = binary)
-
-    def embedComment(self, text):
-        """
-        Embeds the comment by averaging the word embedding for each word in
-        the embedding.
-        """
-        comment = self.tokenize(text)
-        embedding = self.model[comment[0]]
-        deleted = 0
-        for i in range(1, len(comment)):
-            try:
-                embedding += self.model[comment[i]]
-            except KeyError:
-                deleted += 1
-                continue
-        try:
-            embedding = embedding / (len(comment) - deleted)
-        except ValueError:
-            print "Cannot embed this vector rip"
-        return embedding
-
-
-class BoWCommentEmbedder(CommentEmbedder):
-    """
-    Given a word embedding, implements the bag of words comment embedding,
-    turning a comment into a 10000 dim. vector whose ith coordinate is the
-    frequency is the ith word.
-    """
-
-    @staticmethod
-    def buildTopWords(filename = "google-10000-english.txt", num_freq_words = 10000):
-        """
-        Builds a list of the top X English words.
-        """
-        numWords = 1
-        topWords = []
-        with open(filename, 'r') as f:
-            for line in f:
-                if numWords > num_freq_words:
-                    break
-                line = line.strip()
-                topWords.append(line)
-                numWords += 1
-        return topWords
-
-    def embedComment(self, text, filename = "google-10000-english.txt", num_freq_words = 10000):
-        """
-        Implements the bag-of-words embedding.
-        """
-        comment = self.tokenize(text)
-        top_words = self.buildTopWords(filename, num_freq_words)
-        bag = [0] * num_freq_words
-        for word in comment:
-            if word in top_words:
-                bag[top_words.index(word)] += 1
-        return bag
-
-def test():
-    """
-    Some quick code which tests the classes.
-    """
-    # Make a new AvgCommentEmbedder.
-    averager = AvgCommentEmbedder()
-    #averager.loadEmbedding()
-    vec1 = averager.embedComment("cat dog")
-    vec2 = averager.embedComment("pizza burger")
-    vec3 = averager.embedComment("cat")
-    assert((np.linalg.norm(vec1 - vec3)) < (np.linalg.norm(vec2 - vec3)))
-    bow = BoWCommentEmbedder()
-    test_bow = np.zeros(10000)
-    test_bow[0] = 1
-    assert(np.all(np.equal(bow.embedComment("the"), test_bow)))
-
-if __name__ == '__main__':
-    test()
