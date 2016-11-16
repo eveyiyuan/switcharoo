@@ -20,9 +20,20 @@ class AvgCommentEmbedder(CommentEmbedder):
         the embedding.
         """
         comment = self.tokenize(text)
-        embedding = self.model[comment[0]]
+        idx = 1
+        embedding = np.array([])
+        try:
+                embedding = self.model[comment[0]]
+        except KeyError:
+            for j in range(1, len(comment)):
+                try:
+                     embedding = self.model[comment[j]]
+                except KeyError:
+                    idx += 1
+                    continue
+                break
         deleted = 0
-        for i in range(1, len(comment)):
+        for i in range(idx+1, len(comment)):
             try:
                 embedding += self.model[comment[i]]
             except KeyError:
