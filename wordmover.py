@@ -17,7 +17,9 @@ class WordMover:
 		and stores them as member variables.
 		"""
 		self.model = gensim.models.Word2Vec.load_word2vec_format(filename, binary = binary)
+		self.jokesRaw = jokes
 		self.jokes = self.tokenize(jokes)
+		
 
 	@staticmethod
 	def tokenize(jokes):
@@ -34,12 +36,14 @@ class WordMover:
 		stopwords = nltk.corpus.stopwords.words('english')
 		tokens = [token for token in tokens if token not in stopwords]
 		#print self.jokes
-		for joke in self.jokes:
+		bestIdx = -1
+		for idx, joke in enumerate(self.jokes):
 			distance = self.model.wmdistance(joke, tokens)
 			if distance < closest:
 				closest = distance
 				best = joke
-		return best
+				bestIdx = idx
+		return (self.jokesRaw[bestIdx], bestIdx)
 
 def test():
 	jokes = ["pizza burgers fries", "cat dog mouse"]
