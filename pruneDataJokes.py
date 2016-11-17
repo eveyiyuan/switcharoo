@@ -45,6 +45,16 @@ def sortByScore(source, dest):
 		fDest.write("\n")
 	fDest.close()
 
+def removeDeleted(source, dest):
+	fDest = open(dest+".json", 'a')
+	with open(source, 'r') as f:
+		for line in f:
+			commentObj = json.loads(line)
+			if str(commentObj[u'selftext']) == "[deleted]" or str(commentObj[u'selftext']) == "[removed]" :
+				continue
+			else:
+				fDest.write(line)
+
 def main(argv):
 	source = ''
 	dest = ''
@@ -63,8 +73,10 @@ def main(argv):
 			sort = arg
 	if sort == '0':
 		pruneData(source,dest)
-	else:
+	elif sort == '1':
 		sortByScore(source, dest)
+	else:
+		removeDeleted(source, dest)
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

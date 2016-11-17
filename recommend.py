@@ -9,6 +9,9 @@ from numpy.linalg import norm
 from copy import deepcopy
 
 def loadEmbedding(source):
+	''' Loads a file of embedded jokes into memory. Joke embedding vectors should
+	    be vectors of floats.
+	'''
 	vec = []
 	jokeEmbedding = []
 	isEnd = False
@@ -36,6 +39,9 @@ def loadEmbedding(source):
 	return np.array(jokeEmbedding)
 
 def loadJokes(source):
+	''' Loads jokes from submissions in JSON form into memory. Jokes are comprised of
+		the joke title and joke body
+	'''
 	jokes = []
 	with open(source, 'r') as f:
 		for line in f:
@@ -87,15 +93,18 @@ def main(argv):
 
 	#embedding = loadEmbedding(embeddedData)
 	jokesVec = loadJokes(jokes)
-	jokesVecRaw = deepcopy(jokesVec)
+	jokesVecSmall = jokesVec[:1000]
+	jokesVecRaw = deepcopy(jokesVecSmall)
 	#avg = AvgCommentEmbedder()
-	response = raw_input("Please enter your sentence: ")
-	wm = WordMover(jokes=jokesVec)
-	#response = "I saw a cool dog"
-	#responseVec = avg.embedComment(response)
-	best, idx = wm.findBest(response)
-	# print idx
-	print jokesVecRaw[idx]
+	wm = WordMover(jokes=jokesVecSmall)
+	response = raw_input("Please enter your sentence, type STOP to stop: ")
+	while response != "STOP":
+		#response = "I saw a cool dog"
+		#responseVec = avg.embedComment(response)
+		best, idx = wm.findBest(response)
+		# print idx
+		print jokesVecRaw[idx]
+		response = raw_input("Please enter your sentence, type STOP to stop: ")
 	#print jokesVec[375423]
 	#print jokesVec
 
