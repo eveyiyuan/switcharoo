@@ -80,33 +80,43 @@ def findSuggestion(postVec, embedding, jokes):
 def main(argv):
 	embeddedData = ''
 	jokes = ''
+	embedType = ''
+	numJokes = ''
 	try:
-		opts, args = getopt.getopt(argv,"e:j:")
+		opts, args = getopt.getopt(argv,"e:j:t:n:")
 	except getopt.GetoptError:
-		print 'Usage: recommend.py -e <joke embedding file> -j <raw jokes file>'
+		print 'Usage: recommend.py -e <joke embedding file> -j <raw jokes file> -t <type: 1 for averager, 0 for wordmover> -n <number of jokes to use in embedding>'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == "-e":
 			embeddedData = arg
 		elif opt == "-j":
 			jokes = arg
+		elif opt == "-t":
+			embedType = arg
+		elif opt == "-n":
+			numJokes = arg
 
-	#embedding = loadEmbedding(embeddedData)
 	jokesVec = loadJokes(jokes)
-	jokesVecSmall = jokesVec[:1000]
+	jokesVecSmall = jokesVec[:int(numJokes)]
 	jokesVecRaw = deepcopy(jokesVecSmall)
-	#avg = AvgCommentEmbedder()
-	wm = WordMover(jokes=jokesVecSmall)
+	if embedType == '1':
+		embedding = loadEmbedding(embeddedData)
+		avg = AvgCommentEmbedder()
+	else:
+		wm = WordMover(jokes=jokesVecSmall)
+
 	response = raw_input("Please enter your sentence, type STOP to stop: ")
 	while response != "STOP":
 		#response = "I saw a cool dog"
-		#responseVec = avg.embedComment(response)
-		best, idx = wm.findBest(response)
-		# print idx
-		print jokesVecRaw[idx]
+		if embedType == '1':
+			responseVec = avg.embedComment(response)
+			print findSuggestion(responseVec, embedding, jokesVecRaw)
+
+		else:
+			best, idx = wm.findBest(response)
+			print jokesVecRaw[idx]
 		response = raw_input("Please enter your sentence, type STOP to stop: ")
-	#print jokesVec[375423]
-	#print jokesVec
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
