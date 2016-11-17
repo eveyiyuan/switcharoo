@@ -89,9 +89,9 @@ def main(argv):
 	jokesVec = loadJokes(jokes)
 	jokesVecRaw = deepcopy(jokesVec)
 	#avg = AvgCommentEmbedder()
-	#response = raw_input("Please enter your sentence: ")
+	response = raw_input("Please enter your sentence: ")
 	wm = WordMover(jokes=jokesVec)
-	response = "I saw a cool dog"
+	#response = "I saw a cool dog"
 	#responseVec = avg.embedComment(response)
 	best, idx = wm.findBest(response)
 	# print idx
