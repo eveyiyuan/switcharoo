@@ -1,6 +1,7 @@
 from abstract import CommentEmbedder
 import numpy as np
 import gensim
+import json
 
 class AvgCommentEmbedder(CommentEmbedder):
     """
@@ -28,17 +29,29 @@ class AvgCommentEmbedder(CommentEmbedder):
         return embedding
 
 
-def test():
+def test(max_count = 100):
     """
     Some quick code which tests the classes.
     """
     # Make a new AvgCommentEmbedder.
-    averager = AvgCommentEmbedder()
+    #averager = AvgCommentEmbedder()
     #averager.loadEmbedding()
-    vec1 = averager.embedComment("cat dog")
-    vec2 = averager.embedComment("pizza burger")
-    vec3 = averager.embedComment("cat")
-    assert((np.linalg.norm(vec1 - vec3)) < (np.linalg.norm(vec2 - vec3)))
+    #vec1 = averager.embedComment("cat dog")
+    #vec2 = averager.embedComment("pizza burger")
+    #vec3 = averager.embedComment("cat")
+    #assert((np.linalg.norm(vec1 - vec3)) < (np.linalg.norm(vec2 - vec3)))
+    count = 0
+    averager = AvgCommentEmbedder()
+    with open('../jokesSortedDownNoDelete.json') as f:
+        for line in f:
+            #print "Joke number", count
+            if count > max_count:
+                break
+            joke_obj = json.loads(line.strip())
+            joke = joke_obj[u'title'] + joke_obj[u'selftext']
+            if np.isinf(averager.embedComment(joke)):
+                print joke
+            count += 1
     print "Done testing!"
 
 if __name__ == '__main__':
