@@ -9,10 +9,10 @@ class AvgCommentEmbedder(CommentEmbedder):
     the embeddings of each word in a word embedding. We're using the word2vec
     embedding trained on the GoogleNews corpus.
     """
-    def __init__(self,  filename = '../GoogleNews-vectors-negative300.bin', binary = True):
+    def __init__(self,  filename = './GoogleNews-vectors-negative300.bin', binary = True):
         self.loadEmbedding(filename = filename, binary = binary)
 
-    def loadEmbedding(self, filename = '../GoogleNews-vectors-negative300.bin', binary = True):
+    def loadEmbedding(self, filename = './GoogleNews-vectors-negative300.bin', binary = True):
         self.model = gensim.models.Word2Vec.load_word2vec_format(filename, binary = binary)
 
     def embedComment(self, text):
@@ -31,8 +31,7 @@ class AvgCommentEmbedder(CommentEmbedder):
             return np.zeros(len(next(self.model.itervalues())))
         return embedding
 
-
-def test(max_count = 100):
+def test(max_count = -1):
     """
     Some quick code which tests the classes.
     """
@@ -45,17 +44,26 @@ def test(max_count = 100):
     #assert((np.linalg.norm(vec1 - vec3)) < (np.linalg.norm(vec2 - vec3)))
     count = 0
     averager = AvgCommentEmbedder()
-    with open('../jokesSortedDownNoDelete.json') as f:
+    with open('./jokesSortedDownNoDelete.json') as f:
         for line in f:
             #print "Joke number", count
-            if count > max_count:
-                break
+            # if count > max_count:
+            #     break
             joke_obj = json.loads(line.strip())
-            joke = str(joke_obj[u'title']) + " " + str(joke_obj[u'selftext'])
-            if np.isinf(averager.embedComment(joke)):
+            try:
+                joke = joke_obj[u'title'] + joke_obj[u'selftext']
+            except UnicodeEncodeError:
+                continue
+            try:
+                joke_vec = averager.embedComment(joke)
+            except IndexError:
+                print joke
+                print "Index Error"
+                break
+            if any(np.isinf(x) for x in joke_vec):
                 print joke
             count += 1
-    print "Done testing!"
+    #print "Done testing!"
 
 if __name__ == '__main__':
     test()

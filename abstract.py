@@ -27,7 +27,10 @@ class CommentEmbedder:
         # Remove punctuation.
         for i, token in enumerate(comment):
             # Map every character to itself, except delete all punctuation.
-            no_punct = str(token).translate(string.maketrans("",""), string.punctuation).lower()
+            try:
+                no_punct = str(token).translate(string.maketrans("",""), string.punctuation).lower()
+            except UnicodeEncodeError:
+                continue
             comment[i] = no_punct
         return comment
 

@@ -83,7 +83,7 @@ def main(argv):
 	embedType = ''
 	numJokes = ''
 	try:
-		opts, args = getopt.getopt(argv,"e:j:t:n:")
+		opts, args = getopt.getopt(argv,"ej:t:n:")
 	except getopt.GetoptError:
 		print 'Usage: recommend.py -e <joke embedding file> -j <raw jokes file> -t <type: 1 for averager, 0 for wordmover> -n <number of jokes to use in embedding>'
 		sys.exit(2)
