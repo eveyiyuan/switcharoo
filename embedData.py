@@ -20,15 +20,13 @@ def main(argv):
 	source = ''
 	dest = ''
 	try:
-		opts, args = getopt.getopt(argv,"i:o:s:")
+		opts, args = getopt.getopt(argv,"i:")
 	except getopt.GetoptError:
 		print 'Usage: embedData.py -i <input file> Note you must pipe the output to a file'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == "-i":
 			source = arg
-		elif opt == "-o":
-			dest = arg
 	embedData(source)
 
 if __name__ == "__main__":
