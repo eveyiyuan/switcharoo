@@ -28,7 +28,7 @@ class AvgCommentEmbedder(CommentEmbedder):
         if  valid_words != []:
             embedding = np.mean(valid_words, axis = 0)
         else:
-            return np.zeros(len(next(self.model.itervalues())))
+            embedding = np.zeros(self.model.size)
         return embedding
 
 def test(max_count = -1):
