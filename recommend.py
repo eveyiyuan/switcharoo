@@ -3,6 +3,7 @@ import gensim
 import json
 import string
 import sys, getopt
+import nmslib_vector
 from averager import AvgCommentEmbedder
 from wordmover import WordMover
 from numpy.linalg import norm
@@ -74,6 +75,57 @@ def findSuggestion(postVec, embedding, jokes):
         	minIdx = idx
     return jokes[minIdx]
     
+
+def findSuggestionApproximate(postVec, embedding, jokes):
+	"""
+	Takes in an embedded post to reply to. Looks for the most similar joke
+	using an approximate nearest neighbors search, and returns the text
+	of that joke.
+	"""
+    
+    def readData(embeddedJokes):
+        """
+        Not actually currently used in order to be compatible with our
+        (weird) format for storing files, but can be used to avoid storing the
+        entire array of embedded jokes in memory once we get to a reasonable
+        format of storing files.
+        """
+        with open(embeddedJokes) as f:
+            for line in f:
+                yield [float(v) for v in line.strip().split()]
+                
+    space_type = 'l2' # i.e. Euclidian distance metric.
+    space_param = [] # Just sticking with the defaults because they are fine.
+    method_name = 'sw-graph' # Approximate search method.
+    index_name  = 'smallJokeSet.index' # Name of index file to be created.
+    index = nmslib_vector.init(
+                             space_type,
+                             space_param,
+                             method_name,
+                             nmslib_vector.DataType.VECTOR,
+                             nmslib_vector.DistType.FLOAT)
+
+    # Add each embedded joke to our index.
+    idNum = 0
+    for embeddedJoke in embedding:
+        nmslib_vector.addDataPoint(index, idNum, embeddedJoke)
+        idNum += 1
+
+    # Some parameters. Change indexThreadQty as necessary on your machine.
+    # NN can be increased to increase recall but decrease speed.
+    index_param = ['NN=17', 'initIndexAttempts=3', 'indexThreadQty=4']
+    query_time_param = ['initSearchAttempts=3']
+    
+    nmslib_vector.createIndex(index, index_param)
+    nmslib_vector.setQueryTimeParams(index,query_time_param)
+    nmslib_vector.saveIndex(index, index_name)
+
+    k = 1 # i.e. find the k nearest neighbors.
+    nearestNeighborIDX = nmslib_vector.knnQuery(index, k, postVec)[0]
+    # Another option is to have e.g. k = 5 and return the result with
+    # the lowest index, i.e. highest rating.
+    nmslib_vector.freeIndex(index)
+    return jokes[nearestNeighborIDX]
 
 def main(argv):
 	embeddedData = ''
