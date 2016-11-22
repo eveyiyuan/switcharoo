@@ -32,7 +32,6 @@ def loadEmbedding(source):
 				vec.append(float(v))
 			if isEnd == True:
 				jokeEmbedding.append(vec)
-				print vec
 				vec = []
 				isEnd = False
 
@@ -73,7 +72,6 @@ def findSuggestion(postVec, embedding, jokes):
         if dist < minDist:
         	minDist = dist
         	minIdx = idx
-
     return jokes[minIdx]
     
 
@@ -83,7 +81,7 @@ def main(argv):
 	embedType = ''
 	numJokes = ''
 	try:
-		opts, args = getopt.getopt(argv,"ej:t:n:")
+		opts, args = getopt.getopt(argv,"e:j:t:n:")
 	except getopt.GetoptError:
 		print 'Usage: recommend.py -e <joke embedding file> -j <raw jokes file> -t <type: 1 for averager, 0 for wordmover> -n <number of jokes to use in embedding>'
 		sys.exit(2)
@@ -101,7 +99,7 @@ def main(argv):
 	jokesVecSmall = jokesVec[:int(numJokes)]
 	jokesVecRaw = deepcopy(jokesVecSmall)
 	if embedType == '1':
-		embedding = loadEmbedding(embeddedData)
+		embedding = loadEmbedding(embeddedData)[:int(numJokes)]
 		avg = AvgCommentEmbedder()
 	else:
 		wm = WordMover(jokes=jokesVecSmall)
