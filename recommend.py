@@ -79,6 +79,11 @@ def findSuggestion(postVec, embedding, jokes):
     
 
 def findSuggestionApproximate(postVec, embedding, jokes):
+	"""
+	Takes in an embedded post to reply to. Looks for the most similar joke
+	using an approximate nearest neighbors search, and returns the text
+	of that joke.
+	"""
     
     def readData(embeddedJokes):
         """
