@@ -54,7 +54,7 @@ def loadJokes(source, numJokes = -1):
 				break
 			commentObj = json.loads(line)
 			try:
-				joke = str(commentObj[u'title']) + "\n" + str(commentObj[u'selftext']) + "\n by [" + str(commentObj[u'author']) + "](https://reddit.com" + str(commentObj[u'permalink']) + ")"
+				joke = str(commentObj[u'title']) + "  \n" + str(commentObj[u'selftext']) + "  \n By [" + str(commentObj[u'author']) + "](https://reddit.com" + str(commentObj[u'permalink']) + ")"
 			except UnicodeEncodeError:
 				continue
 			jokes.append(joke)
