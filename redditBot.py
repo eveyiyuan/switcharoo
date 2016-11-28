@@ -24,11 +24,14 @@ else:
 			repliedTo.append(line)
 
 submissions = r.front.hot(limit=5)
-maxComments = 10
+maxComments = 2
+maxPosts = 10
+currPosts = 0
 currComments = 0
 for submission in submissions:
-	if currComments > maxComments:
+	if currPosts > maxPosts:
 		break
+	currPosts += 1
 	for top_level_comment in submission.comments.list():
 		if currComments > maxComments:
 			break
