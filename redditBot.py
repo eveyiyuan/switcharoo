@@ -42,8 +42,10 @@ for submission in submissions:
 		if str(submission.id) + ": "+ comment in repliedTo:
 			continue
 		print comment
-		repliedTo.append(str(submission.id) + ": " + comment)
 		response = getJokeAv(comment, EMBEDDED_JOKES, JOKES_RAW, NUM_JOKES, avg)
+		# if similarity(comment, response) > threshold:
+		# updateThreshold()
+		repliedTo.append(str(submission.id) + ": " + comment)
 		print response
 		try:
 			top_level_comment.reply(commentLead+response)
@@ -54,3 +56,30 @@ for submission in submissions:
 with open("repliedTo.txt", "w") as f:
 	for line in repliedTo:
 		f.write(line)
+
+		
+"""
+The main idea here is to learn a good "relevance threshold" that results in
+our bot not posting irrelevant jokes, but also not posting too few jokes.
+
+It does this by gradually decreasing the threshold and increasing it
+every time a post gets a negative reaction.
+"""
+
+threshold = 1.0 # Start with impossibly high threshold.
+slope = 0.25 # The speed at which we decrease the threshold.
+
+def updateThreshold(negativeFeedback):
+	"""
+	Updates the value of the relevance threshold. Takes in "negativeFeedback",
+	a boolean indicating whether or not there has been negative feedback on
+	posts since the last time updateThreshold was called.
+	This should probably be called every time a new joke is going to be posted.
+	"""
+	if negativeFeedback:
+		# If we got downvoted, bump our threshold up and decrease our slope.
+		threshold += slope * 2 # Arbitrary choice for negative feedback bump.
+		slope /= 1.5 # Arbitrary choice for deceleration.
+        
+	else:
+		threshold -= slope
