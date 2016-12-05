@@ -1,4 +1,4 @@
-# Implements a (sub)gradient descent optimization of the objective function
+# Minimizes the objective function:
 #
 # \argmin_{p}{\sum_{q}{\max{(sign(p - q)S_q, 0)}}}
 #
