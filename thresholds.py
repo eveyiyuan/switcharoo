@@ -31,6 +31,8 @@ def getThreshold(similarities, scores):
     Takes in a list of the the similarity scores for previous posts made, as well
     as a list of Reddit upvote scores for the same posts.
     """
+    if len(similarities) < 3:
+        return 0 # Default low threshold so that we start making some posts.
     posts = [{"similarity" : similarities[i], "score" : scores[i]}
               for i in range(len(similarities))]
     # Sort by similarity for convenience.
