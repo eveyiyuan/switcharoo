@@ -1,9 +1,9 @@
 # Implements a (sub)gradient descent optimization of the objective function
 #
-# \argmin_{p}{\sum_{q}{\max{((p - q)S_q, 0)}}}
+# \argmin_{p}{\sum_{q}{\max{(sign(p - q)S_q, 0)}}}
 #
-# which represents the loss function which learns the best separating threshold
-# given comment thresholds q and corresponding scores S_q.
+# which represents the loss function which learns the best separating threshold p
+# given comment similarities q and corresponding reddit post scores S_q.
 
 import numpy as np
 import random
