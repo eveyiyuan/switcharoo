@@ -18,7 +18,7 @@ def evaluateObjective(posts, threshold):
     """
     partialSum = 0
     for post in posts:
-        partialSum += max(np.sign(threshold - post["similarity"]) * post["score"], 0)
+        partialSum += max(np.sign(post["similarity"] - threshold) * post["score"], 0)
     return partialSum
     
 
@@ -32,7 +32,7 @@ def getThreshold(similarities, scores):
     as a list of Reddit upvote scores for the same posts.
     """
     if len(similarities) < 3:
-        return 0 # Default low threshold so that we start making some posts.
+        return 0.8 # Default high threshold so that we start making some posts.
     posts = [{"similarity" : similarities[i], "score" : scores[i]}
               for i in range(len(similarities))]
     # Sort by similarity for convenience.

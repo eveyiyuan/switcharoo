@@ -54,7 +54,7 @@ def loadJokes(source, numJokes = -1):
 				break
 			commentObj = json.loads(line)
 			try:
-				joke = str(commentObj[u'title']) + "  \n" + str(commentObj[u'selftext']) + "  \n By [" + str(commentObj[u'author']) + "](https://reddit.com" + str(commentObj[u'permalink']) + ")"
+				joke = str(commentObj[u'title']) + "  \n" + str(commentObj[u'selftext']) + "  \n By [" + str(commentObj[u'author']) + "](https://np.reddit.com" + str(commentObj[u'permalink']) + ")"
 			except UnicodeEncodeError:
 				continue
 			jokes.append(joke)
@@ -81,7 +81,7 @@ def findSuggestion(postVec, embedding, jokes):
 		if dist < minDist:
 			minDist = dist
 			minIdx = idx
-	return jokes[minIdx]
+	return (jokes[minIdx], minDist)
 	
 
 def findSuggestionApproximate(postVec, embedding, jokes):
@@ -144,6 +144,8 @@ def getJokeAv(input, embeddedData, jokes, numJokes, avg):
 	return findSuggestion(responseVec, embedding, jokesVec)
 
 def main(argv):
+	''' For testing purposes
+	'''
 	embeddedData = ''
 	jokes = ''
 	embedType = ''
